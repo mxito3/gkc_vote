@@ -31,3 +31,8 @@ def decode_transaction(raw_transaction):
         transaction= json.dumps(tx_dict, cls=HexJsonEncoder)
         # transaction = json.dumps(transaction_json)
         return transaction
+def deal_with_transaction_except(e_args):
+        message_json = e_args[0]
+        message_obj = json.loads(message_json)
+        message = message_obj['message']
+        return message

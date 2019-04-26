@@ -78,7 +78,7 @@ class EthUtil():
     def transfer_ether(self,raw_address,password,to,raw_amount):
         address = self.address_util.toChecksumAddress(raw_address)
 
-        from_balance = to_wei(self.getEtherBalance(raw_address))
+        from_balance = self.getEtherBalance(raw_address)
         if from_balance<raw_amount:
             return None
         amount = to_wei(raw_amount)
@@ -102,30 +102,30 @@ class EthUtil():
     def get_transactions(self,raw_address):
         address = self.address_util.toChecksumAddress(raw_address)
 
+    def sign_transfer(self,sender,sender_key,to,raw_amount):
+        nonce = self.get_nonce(sender)
+        from_balance = self.getEtherBalance(sender)
+        if from_balance<raw_amount:
+            return None
+        amount = to_wei(raw_amount)
 
-    # def get
-    # def transfer(self,raw_to,raw_amount):
-    #  nonce = self.web3.eth.getTransactionCount(ourAddress) 
-    #  amount = self.to_wei(raw_amount)
-    #  to = self.address_util.toChecksumAddress(raw_to)
-    #  transaction = {
-    #       'to': to,
-    #       'value': amount,       
-    #       'gasPrice': 1000000000,
-    #       'nonce': nonce,
-    #       'gas':200000
-    #  }
-    #  print("主链币余额{}".format(w3.eth.getBalance(ourAddress)))
-    #  #签名
-    #  signed = w3.eth.account.signTransaction(transaction, key)
-
-
-    #  #When you run sendRawTransaction, you get back the hash of the transaction:
-    #  transactionHash=w3.eth.sendRawTransaction(signed.rawTransaction)  
-    #  # watingMined(transactionHash)
-    #  print("waiting for mined")
-    #  transaction=w3.eth.waitForTransactionReceipt(transactionHash, timeout=120)
-    #  print("打包成功 接受地址余额是{}".format(w3.eth.getBalance(to)))
-
+        transaction = {
+            'to': to,
+            'value': amount,       #1ether
+            'gasPrice': 500000,
+            'nonce': nonce,
+            'gas':2000000
+        }
+        #签名
+        try:
+            signed = self.web3.eth.account.signTransaction(transaction,sender_key)
+            #When you run sendRawTransaction, you get back the hash of the transaction:
+            transactionHash=self.web3.eth.sendRawTransaction(signed.rawTransaction).hex()  
+            return transactionHash
+        except Exception as e:
+            # print("类型是{}".format(type(e.args)))
+            # message = json.loads(e.args[0])
+            # message = deal_with_transaction_except(e.args)
+            raise CommonError(e.args[0]["message"])
 
 

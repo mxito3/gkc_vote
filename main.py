@@ -182,6 +182,66 @@ def who_i_vote_to():
     else:
         result = Result_Factory.generate_result(status=True,data=details)
         return result
+
+
+
+
+@app.route('/sign_transfer',methods=['Post'])
+def sign_transfer():
+    try:
+        form  = Result_Util.get_json_from_request(request)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    
+    # raw_amount = owner
+    from_account = address_util.toChecksumAddress(owner)
+    try:
+        field_name = 'to'
+        raw_to =  Result_Util.get_field_from_json(form,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    to = address_util.toChecksumAddress(raw_to)
+    # if from_account == to:
+    #     result = Result_Factory.generate_result(status=False,message=Error_Messages.From_And_to_Same_Error)
+    #     return result
+    if not (from_account and to):
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
+        return result
+
+    try:
+        field_name = 'amount'
+        raw_amount =  Result_Util.get_field_from_json(form,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+
+    if raw_amount is None:
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_None_Error)
+        return result
+    amount = raw_amount
+    if isinstance(amount,str):
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_type_Error)
+        return result
+    sender_key  = owner_pri_key
+    print("参数是  {} {} {} {}".format(from_account,sender_key,to,amount))
+    # if from_account and password,to,amount
+    try:
+        details= eth_util.sign_transfer(from_account,sender_key,to,amount)        
+        if details is None:
+            result = Result_Factory.generate_result(status=False,message=Error_Messages.No_Enough_Balance)
+            return result    
+    except CommonError as e:
+        print(e)
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    else:
+        result = Result_Factory.generate_result(status=True,data=details)
+        return result
+
+
+
 @app.route('/transfer',methods=['Post'])
 def transfer():
     try:
