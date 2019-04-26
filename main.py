@@ -199,9 +199,9 @@ def transfer():
         result = Result_Factory.generate_result(status=False,message=e.args[0])
         return result
     to = address_util.toChecksumAddress(raw_to)
-    if from_account == to:
-        result = Result_Factory.generate_result(status=False,message=Error_Messages.From_And_to_Same_Error)
-        return result
+    # if from_account == to:
+    #     result = Result_Factory.generate_result(status=False,message=Error_Messages.From_And_to_Same_Error)
+    #     return result
     if not (from_account and to):
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
         return result
@@ -218,9 +218,7 @@ def transfer():
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_None_Error)
         return result
     amount = raw_amount
-    if type(raw_amount) == 'str':
-
- 
+    if isinstance(amount,str):
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_type_Error)
         return result
     print("参数是  {} {} {} {}".format(from_account,password,to,amount))
@@ -232,7 +230,7 @@ def transfer():
             return result    
     except Exception as e:
         print(e)
-        result = Result_Factory.generate_result(status=False,message=Error_Messages.Password_Error)
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
         return result
     else:
         result = Result_Factory.generate_result(status=True,data=details)
