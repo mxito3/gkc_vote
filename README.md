@@ -1,7 +1,7 @@
 ### 解压源码
 ```shell
 mkdir aleth && tar -xvf aleth.tar.gz -C ./aleth
-unzip ~/Downloads/gkc_vote-server.zip 
+unzip gkc_vote-server.zip 
 ```
 ### 开启节点
 ```shell
