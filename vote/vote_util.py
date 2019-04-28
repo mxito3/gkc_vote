@@ -41,7 +41,7 @@ class Vote_Util(Transaction_Base):
         nonce=self.transaction_util.getNonce(sender)
         raw_transaction = self.build_raw_transaction(args,nonce)
         try:
-            tx_receipt = self.transaction_util.sign_and_send(raw_transaction,nonce,pri_key,sender)    
+            tx_receipt = self.transaction_util.sign_and_send(raw_transaction,nonce,pri_key,sender)
             print("投票交易发起成功")
             return tx_receipt
         except Exception as e:
@@ -56,7 +56,7 @@ class Vote_Util(Transaction_Base):
 
     def build_raw_transaction(self,args,nonce):
         raw_transaction = None
-        if not nonce:
+        if nonce==None:
             return None
         if len(args) < 1:
             print("请传入需要调用的函数名")
@@ -71,7 +71,7 @@ class Vote_Util(Transaction_Base):
             operate_type = args[4]
             raw_transaction = self.contract.functions.vote(from_address,to,amount,operate_type)
         return raw_transaction
-    
+
 
     #判断交易有没被打包
     def is_mined(self,transaction_hash):
@@ -134,14 +134,14 @@ class Vote_Util(Transaction_Base):
     def get_candidates(self):
         length = self.get_candidate_length()
         print("candidates length is {}".format(length))
-        result = [] 
+        result = []
         per_item = {}
         for index in range(length):
             candidate = self.contract.functions.candidates(index).call()
             ticket = self.get_amount(candidate)
-            per_item['address'] = candidate 
-            per_item['amount'] = ticket 
-            result.append(json.dumps(per_item)) 
+            per_item['address'] = candidate
+            per_item['amount'] = ticket
+            result.append(json.dumps(per_item))
         return result
     def new_account(self):
         url = "http://localhost:9527"

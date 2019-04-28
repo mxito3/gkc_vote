@@ -1,22 +1,28 @@
-
 from config.common.contract_base import Contract_Base
 # from contract.contract_config import * as sender_config
 from contract.contract_config import *
 from vote.vote_util import Vote_Util
-from flask import request,Flask
+from flask import request,Flask,abort
 from config.common.exception import Error_Messages
 from config.common.response import Result_Factory
 from config.common.exception import CommonError,Error_Messages
 from config.utils.address import AddressUtil
 from config.common.response import Result_Util
 from config.utils.eth import EthUtil
-import uuid 
+import uuid
 contract_base = Contract_Base(contract_address ,abi,ipcPath=ipc_path,rpcPath=None)
 vote_util = Vote_Util(contract_base)
 address_util = AddressUtil(contract_base.web3)
 eth_util = EthUtil(contract_base.web3)
 app = Flask(__name__)
 app.secret_key=bytes(str(uuid.uuid4()),'utf-8')
+
+@app.before_request
+def limit_remote_addr():
+    addr = request.remote_addr
+    if addr != '127.0.0.1' and addr != '47.102.96.204' and addr!= '106.14.9.53':
+        abort(403)  # Forbidde
+
 
 @app.route('/vote',methods=['Post'])
 def vote():
@@ -31,7 +37,7 @@ def vote():
     except CommonError as e:
         result = Result_Factory.generate_result(status=False,message=e.args[0])
         return result
-    
+
 
     from_account = address_util.toChecksumAddress(raw_from)
 
@@ -71,10 +77,10 @@ def vote():
     if raw_amount is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Vote_Amount_None_Error)
         return result
-    
+
     amount = raw_amount
-    
-    
+
+
     if not isinstance(amount,int):
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Vote_Amount_Type_Error)
         return result
@@ -82,10 +88,10 @@ def vote():
     print("参数是  {} {} {} {}".format(from_account,to,amount,operate_type))
     # if from_account and password,to,amount
     try:
-        details= vote_util.vote(from_account,to,amount,operate_type,owner,owner_pri_key)        
+        details= vote_util.vote(from_account,to,amount,operate_type,owner,owner_pri_key)
         if details is None:
             result = Result_Factory.generate_result(status=False,message=Error_Messages.No_Enough_Balance)
-            return result    
+            return result
     except CommonError as e:
         print(e)
         result = Result_Factory.generate_result(status=False,message=e.args[0])
@@ -109,10 +115,10 @@ def is_finish():
         return result
 
     details= vote_util.is_mined(transaction_hash)
-    if details is None: 
+    if details is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Transaction_Id_Error)
         return result
-    
+
     result = Result_Factory.generate_result(status=True,data=details)
     return result
 
@@ -131,7 +137,7 @@ def get_amount():
         return result
 
     details= vote_util.get_amount(address)
-    if details is None: 
+    if details is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
         return result
     else:
@@ -154,7 +160,7 @@ def who_vote_i():
         return result
 
     details= vote_util.get_who_vote_i(address)
-    if details is None: 
+    if details is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
         return result
     else:
@@ -176,7 +182,7 @@ def who_i_vote_to():
         return result
 
     details= vote_util.get_who_i_vote_to(address)
-    if details is None: 
+    if details is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
         return result
     else:
@@ -193,7 +199,7 @@ def transfer():
     except CommonError as e:
         result = Result_Factory.generate_result(status=False,message=e.args[0])
         return result
-    
+
     # raw_amount = owner
     from_account = address_util.toChecksumAddress(owner)
     try:
@@ -228,10 +234,10 @@ def transfer():
     print("参数是  {} {} {} {}".format(from_account,sender_key,to,amount))
     # if from_account and password,to,amount
     try:
-        details= eth_util.sign_transfer(from_account,sender_key,to,amount)        
+        details= eth_util.sign_transfer(from_account,sender_key,to,amount)
         if details is None:
             result = Result_Factory.generate_result(status=False,message=Error_Messages.No_Enough_Balance)
-            return result    
+            return result
     except CommonError as e:
         print(e)
         result = Result_Factory.generate_result(status=False,message=e.args[0])
@@ -249,7 +255,7 @@ def transfer():
 #     except CommonError as e:
 #         result = Result_Factory.generate_result(status=False,message=e.args[0])
 #         return result
-    
+
 #     # raw_amount = owner
 #     from_account = address_util.toChecksumAddress(owner)
 #     try:
@@ -284,10 +290,10 @@ def transfer():
 #     print("参数是  {} {} {} {}".format(from_account,password,to,amount))
 #     # if from_account and password,to,amount
 #     try:
-#         details= eth_util.transfer_ether(from_account,password,to,amount)        
+#         details= eth_util.transfer_ether(from_account,password,to,amount)
 #         if details is None:
 #             result = Result_Factory.generate_result(status=False,message=Error_Messages.No_Enough_Balance)
-#             return result    
+#             return result
 #     except Exception as e:
 #         print(e)
 #         result = Result_Factory.generate_result(status=False,message=e.args[0]['message'])
@@ -313,7 +319,7 @@ def get_eth_balance():
         return result
 
     details= eth_util.getEtherBalance(address)
-    if details is None: 
+    if details is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
         return result
     else:
@@ -335,7 +341,7 @@ def is_mined():
         return result
 
     details= eth_util.is_mined(transaction_hash)
-    if details is None: 
+    if details is None:
         result = Result_Factory.generate_result(status=False,message=Error_Messages.Transaction_Id_Error)
         return result
     result = Result_Factory.generate_result(status=True,data=details)
@@ -351,6 +357,97 @@ def create_account():
     details= vote_util.new_account()
     result = Result_Factory.generate_result(status=True,data=details)
     return result
+
+@app.route('/send_signed_transaction',methods=['Post'])
+def send_transaction():
+    try:
+        form  = Result_Util.get_json_from_request(request)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+
+    try:
+        field_name = 'transaction'
+        transaction  =  Result_Util.get_field_from_json(form,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+
+
+    if not transaction:
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Transaction_Hash_None_Error)
+        return result
+
+    # if from_account and password,to,amount
+    try:
+        details= eth_util.send_transaction(transaction)
+    except Exception as e:
+        print(e)
+        result = Result_Factory.generate_result(status=False,message=e.args[0]['message'])
+        return result
+    else:
+        result = Result_Factory.generate_result(status=True,data=details)
+        return result
+# @app.route('/generate',methods=['Post'])
+# def generate_transfer_transaction():
+#     try:
+#         form  = Result_Util.get_json_from_request(request)
+#     except CommonError as e:
+#         result = Result_Factory.generate_result(status=False,message=e.args[0])
+#         return result
+
+#     # raw_amount = owner
+#     from_account = address_util.toChecksumAddress(owner)
+#     try:
+#         field_name = 'to'
+#         raw_to =  Result_Util.get_field_from_json(form,field_name)
+#     except CommonError as e:
+#         result = Result_Factory.generate_result(status=False,message=e.args[0])
+#         return result
+#     to = address_util.toChecksumAddress(raw_to)
+#     # if from_account == to:
+#     #     result = Result_Factory.generate_result(status=False,message=Error_Messages.From_And_to_Same_Error)
+#     #     return result
+#     if not (from_account and to):
+#         result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
+#         return result
+
+#     try:
+#         field_name = 'amount'
+#         raw_amount =  Result_Util.get_field_from_json(form,field_name)
+#     except CommonError as e:
+#         result = Result_Factory.generate_result(status=False,message=e.args[0])
+#         return result
+
+#     if raw_amount is None:
+#         result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_None_Error)
+#         return result
+#     amount = raw_amount
+#     if isinstance(amount,str):
+#         result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_type_Error)
+#         return result
+#     sender_key  = owner_pri_key
+#     print("参数是  {} {} {} {}".format(from_account,sender_key,to,amount))
+#     # if from_account and password,to,amount
+#     try:
+#         details= eth_util.generate_transfer_transaction(from_account,sender_key,to,amount)
+#         if details is None:
+#             result = Result_Factory.generate_result(status=False,message=Error_Messages.No_Enough_Balance)
+#             return result
+#     except CommonError as e:
+#         print(e)
+#         result = Result_Factory.generate_result(status=False,message=e.args[0])
+#         return result
+#     else:
+#         result = Result_Factory.generate_result(status=True,data=details)
+#         return result
+
+
+@app.route('/')
+def root():
+    return "root index "
+
+
 if __name__ == "__main__":
     print(app.url_map)
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=3333)
