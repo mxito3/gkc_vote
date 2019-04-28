@@ -21,7 +21,7 @@ curl 127.0.0.1:9527
 cd gkc_vote-server
 python3.7 -m venv venv
 source venv/bin/activate
-sudo apt-get install  python3.7-dev (如果报错使用 sudo apt -f install &&sudo  apt-get install  python3.7-dev)
+sudo apt-get install  python3.7-dev #(如果报错使用 sudo apt -f install &&sudo  apt-get install  python3.7-dev)
 pip install -r requirements.txt
 python main.py 
 ```
