@@ -3,7 +3,7 @@ from config.common.contract_base import Contract_Base
 # from contract.contract_config import * as sender_config
 from contract.contract_config import *
 from vote.vote_util import Vote_Util
-from flask import request,Flask
+from flask import request,Flask,abort
 from config.common.exception import Error_Messages
 from config.common.response import Result_Factory
 from config.common.exception import CommonError,Error_Messages
@@ -18,6 +18,11 @@ eth_util = EthUtil(contract_base.web3)
 app = Flask(__name__)
 app.secret_key=bytes(str(uuid.uuid4()),'utf-8')
 
+@app.before_request
+def limit_remote_addr():
+    addr = request.remote_addr
+    if addr != '127.0.0.1' and addr != '':
+        abort(403)  # Forbidde
 @app.route('/vote',methods=['Post'])
 def vote():
     try:
@@ -351,6 +356,102 @@ def create_account():
     details= vote_util.new_account()
     result = Result_Factory.generate_result(status=True,data=details)
     return result
+
+@app.route('/send_signed_transaction',methods=['Post'])
+def send_transaction():
+    try:
+        form  = Result_Util.get_json_from_request(request)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+
+    try:
+        field_name = 'transaction'
+        transaction  =  Result_Util.get_field_from_json(form,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    
+
+    if not transaction:
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Transaction_Hash_None_Error)
+        return result
+    
+    # if from_account and password,to,amount
+    try:
+        details= eth_util.send_transaction(transaction)    
+    except Exception as e:
+        print(e)
+        result = Result_Factory.generate_result(status=False,message=e.args[0]['message'])
+        return result
+    else:
+        result = Result_Factory.generate_result(status=True,data=details)
+        return result
+@app.route('/generate',methods=['Post'])
+def generate_transfer_transaction():
+    try:
+        form  = Result_Util.get_json_from_request(request)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    
+    # raw_amount = owner
+    from_account = address_util.toChecksumAddress(owner)
+    try:
+        field_name = 'to'
+        raw_to =  Result_Util.get_field_from_json(form,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    to = address_util.toChecksumAddress(raw_to)
+    # if from_account == to:
+    #     result = Result_Factory.generate_result(status=False,message=Error_Messages.From_And_to_Same_Error)
+    #     return result
+    if not (from_account and to):
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
+        return result
+
+    try:
+        field_name = 'amount'
+        raw_amount =  Result_Util.get_field_from_json(form,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+
+    if raw_amount is None:
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_None_Error)
+        return result
+    amount = raw_amount
+    if isinstance(amount,str):
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Transfer_Amount_type_Error)
+        return result
+    sender_key  = owner_pri_key
+    print("参数是  {} {} {} {}".format(from_account,sender_key,to,amount))
+    # if from_account and password,to,amount
+    try:
+        details= eth_util.generate_transfer_transaction(from_account,sender_key,to,amount)        
+        if details is None:
+            result = Result_Factory.generate_result(status=False,message=Error_Messages.No_Enough_Balance)
+            return result    
+    except CommonError as e:
+        print(e)
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    else:
+        result = Result_Factory.generate_result(status=True,data=details)
+        return result
+    
+
+@app.route('/')
+def root():
+    return "root index "
+
+
 if __name__ == "__main__":
     print(app.url_map)
     app.run(debug=True)
+
+
+
+
+#  curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d  '{ "transaction": "0xf86d8201558307a120831e848094df96f2fc9e7ccd8a5cd517876391bcbb1cf315a1880de0b6b3a7640000801ba03b9474623bfed37c95315510c2c95f40f71ffad0a33ddad664d80eb27e936156a04f648bab4078e887ebcd642cc354abcfef7fdec95c7cb2a364e3fb16b2b42105"}' http://127.0.0.1:3333/send_signed_transaction

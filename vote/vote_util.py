@@ -39,6 +39,7 @@ class Vote_Util(Transaction_Base):
         raw_args.append(operate_type)
         args = contract_func_serialization(raw_args)
         nonce=self.transaction_util.getNonce(sender)
+        print("args{} nonce{}".format(args,nonce))
         raw_transaction = self.build_raw_transaction(args,nonce)
         try:
             tx_receipt = self.transaction_util.sign_and_send(raw_transaction,nonce,pri_key,sender)    
@@ -46,7 +47,7 @@ class Vote_Util(Transaction_Base):
             return tx_receipt
         except Exception as e:
             # print(e.args[0]["message"])
-            raise CommonError(e.args[0]["message"])
+            raise CommonError(e.args)
 
     def is_admin(self,raw_admin):
         admin = self.address_util.toChecksumAddress(raw_admin)
@@ -55,8 +56,10 @@ class Vote_Util(Transaction_Base):
         return self.contract.functions.isAdmin(admin).call()
 
     def build_raw_transaction(self,args,nonce):
+        print("in here ")
         raw_transaction = None
-        if not nonce:
+        if nonce==None:
+            print("not nonce")
             return None
         if len(args) < 1:
             print("请传入需要调用的函数名")
@@ -70,6 +73,7 @@ class Vote_Util(Transaction_Base):
             amount = args[3]
             operate_type = args[4]
             raw_transaction = self.contract.functions.vote(from_address,to,amount,operate_type)
+        print("raw_transaction is {}".format(raw_transaction))
         return raw_transaction
     
 

@@ -111,7 +111,7 @@ class EthUtil():
 
         transaction = {
             'to': to,
-            'value': amount,       #1ether
+            'value': amount,       
             'gasPrice': 500000,
             'nonce': nonce,
             'gas':2000000
@@ -128,4 +128,32 @@ class EthUtil():
             # message = deal_with_transaction_except(e.args)
             raise CommonError(e.args[0]["message"])
 
+    def generate_transfer_transaction(self,sender,sender_key,to,raw_amount):
+        nonce = self.get_nonce(sender)
+        from_balance = self.getEtherBalance(sender)
+        if from_balance<raw_amount:
+            return None
+        amount = to_wei(raw_amount)
+
+        transaction = {
+            'to': to,
+            'value': amount,       
+            'gasPrice': 500000,
+            'nonce': nonce,
+            'gas':2000000
+        }
+        #签名
+        try:
+            
+            signed = self.web3.eth.account.signTransaction(transaction,sender_key).rawTransaction.hex()
+            # signed = decode_transaction(raw_signed)
+            # print(signed)
+            #When you run sendRawTransaction, you get back the hash of the transaction:
+            # transactionHash=self.web3.eth.sendRawTransaction(signed.rawTransaction).hex()  
+            return signed
+        except Exception as e:
+            # print("类型是{}".format(type(e.args)))
+            # message = json.loads(e.args[0])
+            # message = deal_with_transaction_except(e.args)
+            raise CommonError(e.args)
 
