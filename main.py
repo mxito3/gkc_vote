@@ -10,6 +10,7 @@ from config.utils.address import AddressUtil
 from config.common.response import Result_Util
 from config.utils.eth import EthUtil
 import uuid
+from config.common.utils import *
 contract_base = Contract_Base(contract_address ,abi,ipcPath=ipc_path,rpcPath=None)
 vote_util = Vote_Util(contract_base)
 address_util = AddressUtil(contract_base.web3)
@@ -354,7 +355,11 @@ def get_candidate():
 
 @app.route('/create_account')
 def create_account():
-    details= vote_util.new_account()
+    details=None
+    while True:
+        details= vote_util.new_account()
+        if is_valid_key(details):
+            break
     result = Result_Factory.generate_result(status=True,data=details)
     return result
 

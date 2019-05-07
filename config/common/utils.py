@@ -36,3 +36,18 @@ def deal_with_transaction_except(e_args):
         message_obj = json.loads(message_json)
         message = message_obj['message']
         return message
+
+
+def is_valid_key(key_pair):
+        # print(type(key_pair))
+        invalid = {}
+        detials_json = json.loads(key_pair)
+        # print("details is {}".format(detials_json))
+        private_key = detials_json['private_key']
+        account = detials_json['address']
+        if len(account)!=42 or len(private_key)!=64:
+                print("生成了无效地址,地址长度是{}，私钥长度是{}".format(len(account),len(private_key)))
+                # invalid['{}'.format]
+                return False
+        else:
+                return True

@@ -148,5 +148,4 @@ class Vote_Util(Transaction_Base):
         u = request.urlopen(url)
         raw_result = u.read()
         result = raw_result.decode('utf8').replace("'", '"')
-        print("new account is {}".format(result))
         return result
