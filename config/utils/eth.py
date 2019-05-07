@@ -18,33 +18,33 @@ class EthUtil():
             return None
         balance = to_ether(self.web3.eth.getBalance(address))
         return balance
-    
+
     #新建账户
     def newAccount(self,password):
         # password="bc502f8b-7823-49e7-bc5c-6f3d71bb50f9"
         return self.web3.personal.newAccount(password)
-    
+
     #获取区块高度
     def get_block_height(self):
         return self.web3.eth.blockNumber
-    
+
     #转化成最小单位
     def to_wei(self,raw_amount):
         return Web3.toWei(raw_amount,'ether')
-    
+
     #获得gas price
     def get_gas_price(self):
         return self.web3.eth.gasPrice()
-    
+
     #获得某个交易使用的以太币数量
     def get_transaction_fees(self,transaction_hash):
         is_mined = self.is_mined(transaction_hash)
         if  not is_mined:
             return is_mined
-        transaction_receipt = self.web3.eth.getTransactionReceipt(transaction_hash) 
+        transaction_receipt = self.web3.eth.getTransactionReceipt(transaction_hash)
         gas_used = transaction_receipt['gasUsed']
         transaction = self.web3.eth.getTransaction(transaction_hash)
-        gas_price =  transaction['gasPrice']  
+        gas_price =  transaction['gasPrice']
         fees = to_ether(gas_used*gas_price)
         return fees
 
@@ -63,7 +63,7 @@ class EthUtil():
         # transaction = Web3. toJson(raw_transaction)
         print("result is {}".format(result))
         return str(result)
-    
+
     #判断交易有没被打包
     def is_mined(self,transaction_hash):
         if not is_transaction_hash(transaction_hash):
@@ -73,8 +73,8 @@ class EthUtil():
         else:
             return False
 
-    
-            
+
+
     def transfer_ether(self,raw_address,password,to,raw_amount):
         address = self.address_util.toChecksumAddress(raw_address)
 
@@ -90,8 +90,8 @@ class EthUtil():
             return self.web3.toHex(sendToBuyerResult)
         else:
             return False
-        
-        
+
+
     def send_transaction(self,signed_transaction):
         return self.transaction_util.send_transaction(signed_transaction)
 
@@ -112,7 +112,7 @@ class EthUtil():
         transaction = {
             'to': to,
             'value': amount,       #1ether
-            'gasPrice': 500000,
+            'gasPrice': 5000000000,
             'nonce': nonce,
             'gas':2000000
         }
@@ -120,7 +120,7 @@ class EthUtil():
         try:
             signed = self.web3.eth.account.signTransaction(transaction,sender_key)
             #When you run sendRawTransaction, you get back the hash of the transaction:
-            transactionHash=self.web3.eth.sendRawTransaction(signed.rawTransaction).hex()  
+            transactionHash=self.web3.eth.sendRawTransaction(signed.rawTransaction).hex()
             return transactionHash
         except Exception as e:
             # print("类型是{}".format(type(e.args)))
