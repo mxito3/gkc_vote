@@ -21,7 +21,7 @@ app.secret_key=bytes(str(uuid.uuid4()),'utf-8')
 @app.before_request
 def limit_remote_addr():
     addr = request.remote_addr
-    if addr != '127.0.0.1' and addr != '47.102.96.204' and addr!= '106.14.9.53':
+    if addr != '127.0.0.1' and addr != '47.102.96.204' and addr!= '106.14.9.53' and addr!="39.98.199.155":
         abort(403)  # Forbidde
 
 
