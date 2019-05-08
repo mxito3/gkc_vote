@@ -68,10 +68,12 @@ class EthUtil():
     def is_mined(self,transaction_hash):
         if not is_transaction_hash(transaction_hash):
             return None
-        if self.web3.eth.getTransactionReceipt(transaction_hash):
-            return True
-        else:
-            return False
+        receipt =self.web3.eth.getTransactionReceipt(transaction_hash)
+        if receipt==None:
+            return "2"
+        #receipts_json = json.loads(receipt)
+        transaction_status = receipt['status']
+        return transaction_status
 
 
 
