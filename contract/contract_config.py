@@ -4,5 +4,5 @@ owner = '0xC332606A601Ded6C735a8D983161224EEc46d39F'
 #owner = '0x29951e1A0F07A626730009062bcdFF3Be635EEab'
 owner_pri_key = '4b4dd2aaf9d77d571f5560daee05fe1e419c735c9a9348ee6683dd49b5d7a1cf'
 #owner_pri_key = '405E5644C0AB171122DF1FE550812E60204B4E8A15D6244A91F3E88057B93795'
-# ipc_path = "/home/xhy/testData/geth.ipc"
-ipc_path = "~/.ethereum/geth.ipc"
+ipc_path = "/home/xhy/testData/geth.ipc"
+#ipc_path = "~/.ethereum/geth.ipc"
