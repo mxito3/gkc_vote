@@ -1,3 +1,5 @@
+
+import uuid
 class AddressUtil(object):
     def __init__(self,web3):
         self.web3 = web3
@@ -12,4 +14,5 @@ class AddressUtil(object):
             return self.web3.toChecksumAddress(address)
         else:
             return address
+    
 

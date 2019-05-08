@@ -1,7 +1,8 @@
 from __future__ import division
-import json
+import json,uuid
 from hexbytes import HexBytes
 from web3 import Web3
+from eth_account import Account
 class HexJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, HexBytes):
@@ -45,9 +46,21 @@ def is_valid_key(key_pair):
         # print("details is {}".format(detials_json))
         private_key = detials_json['private_key']
         account = detials_json['address']
-        if len(account)!=42 or len(private_key)!=64:
+        if len(account)!=42 or len(private_key)!=66:
                 print("生成了无效地址,地址长度是{}，私钥长度是{}".format(len(account),len(private_key)))
                 # invalid['{}'.format]
                 return False
         else:
                 return True
+
+def new_key_pair():
+        password =str(uuid.uuid4())
+        account = Account.create(password)
+        private_key = account.privateKey.hex()
+        address = account.address
+        key_pair = {}
+        key_pair['private_key'] = private_key
+        key_pair['address'] = address
+        key_pair_json = json.dumps(key_pair)
+        return key_pair_json
+

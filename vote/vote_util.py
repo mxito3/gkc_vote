@@ -5,6 +5,8 @@ from config.common.utils import *
 from config.common.contract_base import Contract_Base
 from config.common.exception import CommonError,Error_Messages
 from urllib import request
+
+
 class Vote_Util(Transaction_Base):
     def __init__(self,contract_util:Contract_Base):
         self.web3 = contract_util.web3
@@ -144,8 +146,4 @@ class Vote_Util(Transaction_Base):
             result.append(json.dumps(per_item))
         return result
     def new_account(self):
-        url = "http://localhost:9527"
-        u = request.urlopen(url)
-        raw_result = u.read()
-        result = raw_result.decode('utf8').replace("'", '"')
-        return result
+        return new_key_pair()

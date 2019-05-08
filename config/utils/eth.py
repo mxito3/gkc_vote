@@ -110,7 +110,6 @@ class EthUtil():
         if from_balance<raw_amount:
             return None
         amount = to_wei(raw_amount)
-
         transaction = {
             'to': to,
             'value': amount,       #1ether
@@ -129,5 +128,7 @@ class EthUtil():
             # message = json.loads(e.args[0])
             # message = deal_with_transaction_except(e.args)
             raise CommonError(e.args[0]["message"])
+  
 
 
+    # def get_address_by_pri()
