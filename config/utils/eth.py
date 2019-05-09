@@ -115,9 +115,11 @@ class EthUtil():
             'value': amount,       #1ether
             'gasPrice': 5000000000,
             'nonce': nonce,
-            'gas':2000000
+            'gas':2000000,
         }
-        #签名
+        gas = self.web3.eth.estimateGas(transaction)
+        print("gas is {}".format(gas))
+        transaction['gas'] = gas
         try:
             signed = self.web3.eth.account.signTransaction(transaction,sender_key)
             #When you run sendRawTransaction, you get back the hash of the transaction:
@@ -128,7 +130,7 @@ class EthUtil():
             # message = json.loads(e.args[0])
             # message = deal_with_transaction_except(e.args)
             raise CommonError(e.args[0]["message"])
-  
+
 
 
     # def get_address_by_pri()
