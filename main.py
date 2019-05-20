@@ -11,18 +11,18 @@ from config.common.response import Result_Util
 from config.utils.eth import EthUtil
 import uuid
 from config.common.utils import *
-contract_base = Contract_Base(contract_address ,abi,ipcPath=ipc_path,rpcPath=None)
+contract_base = Contract_Base(contract_address ,abi,ipcPath=None,rpcPath=rpc_path)
 vote_util = Vote_Util(contract_base)
 address_util = AddressUtil(contract_base.web3)
 eth_util = EthUtil(contract_base.web3)
 app = Flask(__name__)
 app.secret_key=bytes(str(uuid.uuid4()),'utf-8')
 
-@app.before_request
-def limit_remote_addr():
-    addr = request.remote_addr
-    if addr != '127.0.0.1' and addr != '47.102.96.204' and addr!= '106.14.9.53' and addr!="39.98.199.155":
-        abort(403)  # Forbidde
+# @app.before_request
+# def limit_remote_addr():
+#     addr = request.remote_addr
+#     if addr != '127.0.0.1' and addr != '47.102.96.204' and addr!= '106.14.9.53' and addr!="39.98.199.155":
+#         abort(403)  # Forbidde
 
 
 @app.route('/vote',methods=['Post'])
@@ -362,6 +362,7 @@ def create_account():
             break
     result = Result_Factory.generate_result(status=True,data=details)
     return result
+    
 
 @app.route('/send_signed_transaction',methods=['Post'])
 def send_transaction():
@@ -453,6 +454,32 @@ def root():
     return "root index "
 
 
+
+@app.route('/get_nonce')
+def get_nonce():
+
+    try:
+        args  = Result_Util.get_args_from_request(request)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+    try:
+        field_name = 'address'
+        address =  Result_Util.get_field_from_request_args(args,field_name)
+    except CommonError as e:
+        result = Result_Factory.generate_result(status=False,message=e.args[0])
+        return result
+
+    details= eth_util.get_nonce(address)
+    if details is None:
+        result = Result_Factory.generate_result(status=False,message=Error_Messages.Address_Length_Error)
+        return result
+    else:
+        result = Result_Factory.generate_result(status=True,data=details)
+        return result
+
 if __name__ == "__main__":
     print(app.url_map)
-    app.run(host="0.0.0.0",port=3333)
+    # app.run(host="0.0.0.0",port=4444)
+    # app.run(host="0.0.0.0",port=3333)
+    app.run(host="0.0.0.0",port=2222)

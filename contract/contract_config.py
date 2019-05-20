@@ -1,8 +1,16 @@
 abi = '[{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"isAdmin","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"who_vote_i_length","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"uint256"}],"name":"who_i_vote_to","outputs":[{"name":"from_address","type":"address"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"candidates","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"sender","type":"address"},{"name":"to","type":"address"},{"name":"amount","type":"uint256"},{"name":"operate_type","type":"uint8"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"amounts","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"new_admin","type":"address"}],"name":"setAdmin","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"is_candidate","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"uint256"}],"name":"who_vote_i","outputs":[{"name":"from_address","type":"address"},{"name":"amount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"who_i_vote_to_length","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"candidates_length","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'
 contract_address = '0x440d025da04bfe0cd3d19b721dbd19516ee76fea'
-owner = '0xC332606A601Ded6C735a8D983161224EEc46d39F'
-#owner = '0x29951e1A0F07A626730009062bcdFF3Be635EEab'
-owner_pri_key = '4b4dd2aaf9d77d571f5560daee05fe1e419c735c9a9348ee6683dd49b5d7a1cf'
-#owner_pri_key = '405E5644C0AB171122DF1FE550812E60204B4E8A15D6244A91F3E88057B93795'
-ipc_path = "/home/xhy/testData/geth.ipc"
-#ipc_path = "~/.ethereum/geth.ipc"
+# owner = '0xC332606A601Ded6C735a8D983161224EEc46d39F'
+# owner_pri_key = '4b4dd2aaf9d77d571f5560daee05fe1e419c735c9a9348ee6683dd49b5d7a1cf'
+
+
+
+# owner = '0xA13def3dfEFa8DC8773dc2Aaa155D203D5AF8493'
+# owner_pri_key = '1DB1BADACFB6D7BE8C32A01D574E615CBCBDEB48C8CA7DCE26A73F3B56F880BB'
+
+owner = '0x47c840525b86C7575D124bA0eb44F29db6CDc169'
+owner_pri_key = '0x85451258d4a0a8146557b605afe154fd13f03c067a8dab3767ee7ae2f459ea5d'
+
+#ipc_path = "/home/xhy/testData/geth.ipc"
+ipc_path = "~/.ethereum/geth.ipc"
+rpc_path = "http://114.55.242.11:30304"

@@ -115,8 +115,11 @@ class EthUtil():
             'value': amount,       #1ether
             'gasPrice': 5000000000,
             'nonce': nonce,
-            'gas':2000000
+            'gas':2000000000000
         }
+        # gas = self.web3.eth.estimateGas(transaction)
+        # print("gas is {}".format(gas))
+        # transaction['gas'] = gas
         #签名
         try:
             signed = self.web3.eth.account.signTransaction(transaction,sender_key)
